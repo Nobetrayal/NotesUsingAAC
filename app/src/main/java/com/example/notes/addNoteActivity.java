@@ -2,6 +2,7 @@ package com.example.notes;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -20,21 +21,20 @@ public class addNoteActivity extends AppCompatActivity {
     private TextView editTextDescription;
     private Spinner spinnerDayOfWeek;
     private RadioGroup radioGroupPriority;
-    private NotesDBHelper dbHelper;
-    private SQLiteDatabase database;
+    private MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
 
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
             actionBar.hide();
         }
 
-        dbHelper = new NotesDBHelper(this);
-        database = dbHelper.getWritableDatabase();
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -55,13 +55,9 @@ public class addNoteActivity extends AppCompatActivity {
         int priority = Integer.parseInt(radioButton.getText().toString());
 
         if (isFilled(title, description)) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, title);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, description);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, priority);
 
-            database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
+            Note note = new Note(title, description, dayOfWeek, priority);
+            viewModel.insertNote(note);
 
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);

@@ -17,6 +17,14 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
     private List<Note> notes;
     private OnNoteClickListener onNoteClickListener;
 
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+        notifyDataSetChanged();
+    }
+
+    public List<Note> getNotes() {
+        return notes;
+    }
 
     public void setOnNoteClickListener(OnNoteClickListener onNoteClickListener) {
         this.onNoteClickListener = onNoteClickListener;
