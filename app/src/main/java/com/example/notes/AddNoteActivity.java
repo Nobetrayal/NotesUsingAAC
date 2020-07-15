@@ -15,13 +15,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class addNoteActivity extends AppCompatActivity {
+public class AddNoteActivity extends AppCompatActivity {
 
     private TextView editTextTitle;
     private TextView editTextDescription;
     private Spinner spinnerDayOfWeek;
     private RadioGroup radioGroupPriority;
     private MainViewModel viewModel;
+
+    private boolean isEditing = false;
+    private int noteId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +34,7 @@ public class addNoteActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.hide();
         }
 
@@ -41,6 +44,43 @@ public class addNoteActivity extends AppCompatActivity {
         spinnerDayOfWeek = findViewById(R.id.spinnerDayOfWeek);
         radioGroupPriority = findViewById(R.id.radioGroupPriority);
 
+        Intent intent = getIntent();
+        fillSavedValues(intent);
+
+    }
+
+    private void fillSavedValues(Intent intent) {
+
+        isEditing = intent.getBooleanExtra("edit", false);
+
+        if (isEditing) {
+
+            noteId = intent.getIntExtra("id", 0);
+            Note note = viewModel.getNote(noteId);
+
+            editTextTitle.setText(note.getTitle());
+            editTextDescription.setText(note.getDescription());
+            spinnerDayOfWeek.setSelection(note.getDayOfWeek() - 1);
+
+            int radioButtonID;
+
+            switch (note.getPriority()) {
+
+                case 1:
+                    radioButtonID = R.id.radioButton1;
+                    break;
+                case 2:
+                    radioButtonID = R.id.radioButton2;
+                    break;
+                default:
+                    radioButtonID = R.id.radioButton3;
+
+            }
+
+            RadioButton radioButtonPriority = findViewById(radioButtonID);
+            radioButtonPriority.setChecked(true);
+
+        }
 
     }
 
@@ -56,8 +96,15 @@ public class addNoteActivity extends AppCompatActivity {
 
         if (isFilled(title, description)) {
 
-            Note note = new Note(title, description, dayOfWeek, priority);
-            viewModel.insertNote(note);
+            if (isEditing){
+                Note note = new Note(noteId, title, description, dayOfWeek, priority);
+                viewModel.updateNotes(note);
+            } else {
+                Note note = new Note(title, description, dayOfWeek, priority);
+                viewModel.insertNote(note);
+            }
+
+
 
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);

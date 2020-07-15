@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MainViewModel extends AndroidViewModel {
 
@@ -35,6 +36,22 @@ public class MainViewModel extends AndroidViewModel {
 
     public void deleteAllTasks() {
         new DeleteAllTasks().execute();
+    }
+
+    public Note getNote(int id) {
+
+        try {
+            return new GetNote().execute(id).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateNotes(Note... notes) {
+
+        new UpdateNotes().execute(notes);
+
     }
 
     private static class InsertTask extends AsyncTask<Note, Void, Void> {
@@ -70,4 +87,25 @@ public class MainViewModel extends AndroidViewModel {
             return null;
         }
     }
+
+    private static class GetNote extends AsyncTask<Integer, Void, Note> {
+
+        @Override
+        protected Note doInBackground(Integer... integers) {
+
+            return database.notesDao().getNote(integers[0]);
+
+        }
+    }
+
+    private static class UpdateNotes extends AsyncTask<Note, Void, Void> {
+        @Override
+        protected Void doInBackground(Note... notes) {
+
+            database.notesDao().updateNotes(notes);
+
+            return null;
+        }
+    }
+
 }

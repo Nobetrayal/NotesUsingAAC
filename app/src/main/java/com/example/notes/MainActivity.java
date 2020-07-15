@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +44,13 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnNoteClickListener(new NotesAdapter.OnNoteClickListener() {
             @Override
             public void onNoteClick(int position) {
-                Toast.makeText(MainActivity.this, "Номер позиции" + position, Toast.LENGTH_SHORT).show();
 
+                Note note = adapter.getNotes().get(position);
+
+                Intent intent = new Intent(getApplicationContext(), AddNoteActivity.class);
+                intent.putExtra("edit", true);
+                intent.putExtra("id", note.getId());
+                startActivity(intent);
 
             }
 
@@ -88,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickAddNote(View view) {
 
-        Intent intent = new Intent(this, addNoteActivity.class);
+        Intent intent = new Intent(this, AddNoteActivity.class);
         startActivity(intent);
 
     }

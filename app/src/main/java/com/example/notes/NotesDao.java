@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -23,6 +24,11 @@ public interface NotesDao {
     @Query("DELETE FROM notes")
     void deleteAllNotes();
 
+    @Update
+    void updateNotes(Note... notes);
+
+    @Query("SELECT * FROM notes WHERE id = :id")
+    Note getNote(int id);
 }
 
 
