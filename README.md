@@ -1,3 +1,3 @@
 # NotesUsingAAC
-Room, LifeData, LifeCycle
+Room, LifeData, LifeCycle.
 My first CRUD app
